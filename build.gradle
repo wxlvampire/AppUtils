@@ -48,11 +48,40 @@ android {
 
 dependencies {
     //    classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
 //        compile 'com.jakewharton:butterknife:5.1.1'
-    compile 'com.android.support:recyclerview-v7:26.1.0'
+    implementation 'com.android.support:recyclerview-v7:26.1.0'
     //    compile 'com.jakewharton:butterknife:8.4.0'
     //    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
+}
+
+// 指定编码
+tasks.withType(JavaCompile) {
+    options.encoding = "utf-8"
+}
+
+// 打包源码
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    failOnError  false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
+}
+
+// 制作文档(Javadoc)
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
 }
